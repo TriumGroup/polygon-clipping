@@ -4,7 +4,8 @@ import sdl2
 class Circle:
     DEFAULT_DASH_LENGTH = 4
 
-    def __init__(self, sdl_renderer, center, radius, is_point_visible, dash_length=DEFAULT_DASH_LENGTH):
+    def __init__(self, sdl_renderer, center, radius, is_point_visible=lambda x, y: True,
+                 dash_length=DEFAULT_DASH_LENGTH):
         self._is_point_visible = is_point_visible
         self._sdl_renderer = sdl_renderer
         self._center_x, self._center_y = center
