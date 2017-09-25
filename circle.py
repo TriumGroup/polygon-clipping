@@ -1,13 +1,16 @@
 from math import hypot
+from random import randrange
 
 import sdl2
 
+from helper import line_contains
 from shape import Shape
 
 
 class Circle(Shape):
     def __init__(self, sdl_renderer, center, radius, is_point_visible=Shape.ALWAYS_VISIBLE,
-                 dash_length=Shape.DEFAULT_DASH_LENGTH):
+                 dash_length=Shape.DEFAULT_DASH_LENGTH, viewport_points=None):
+        self._viewport_edges = viewport_points
         self._is_point_visible = is_point_visible
         self._sdl_renderer = sdl_renderer
         self._center_x, self._center_y = center
@@ -42,7 +45,7 @@ class Circle(Shape):
     def move(self, vector):
         delta_x, delta_y = vector
         return Circle(self._sdl_renderer, (self._center_x + delta_x, self._center_y + delta_y), self._radius,
-                      self._is_point_visible, self._dash_length)
+                      self._is_point_visible, self._dash_length, self._viewport_edges)
 
     def contains(self, point):
         x, y = point
@@ -63,3 +66,19 @@ class Circle(Shape):
         else:
             if self._is_draw_dash_point(point_index):
                 sdl2.SDL_RenderDrawPoint(self._sdl_renderer, x, y)
+
+    def edge_vector(self):
+        top = (self._center_x, self._center_y - self._radius)
+        bottom = (self._center_x, self._center_y + self._radius)
+        left = (self._center_x - self._radius, self._center_y)
+        right = (self._center_x + self._radius, self._center_y)
+        if line_contains(*self._viewport_edges[0], top):
+            return randrange(-1, 1), 1
+        elif line_contains(*self._viewport_edges[1], right):
+            return -1, randrange(-1, 1)
+        elif line_contains(*self._viewport_edges[2], bottom):
+            return randrange(-1, 1), -1
+        elif line_contains(*self._viewport_edges[3], left):
+            return 1, randrange(-1, 1)
+        else:
+            return None

@@ -41,3 +41,18 @@ def distance(first, second):
     f_x, f_y = first
     s_x, s_y = second
     return sqrt((f_x - s_x) ** 2 + (f_y - s_y) ** 2)
+
+
+def cmp(first, second):
+    if first == second:
+        return 0
+    return 1 if first > second else -1
+
+
+def line_contains(start, end, point):
+    start_x, start_y = start
+    end_x, end_y = end
+    test_x, test_y = point
+    return ((end_x - start_x) * (test_y - start_y) == (test_x - start_x) * (end_y - start_y) and
+            abs(cmp(start_x, test_x) + cmp(end_x, test_x)) <= 1 and
+            abs(cmp(start_y, test_y) + cmp(end_y, test_y)) <= 1)

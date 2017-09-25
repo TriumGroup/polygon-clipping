@@ -49,6 +49,9 @@ class Window:
         else:
             self._right_mouse_pressed = False
 
+    def on_circle_event(self):
+        self._renderer.on_circle_event()
+
     @property
     def can_rotate(self):
         return self._right_mouse_pressed

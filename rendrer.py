@@ -4,6 +4,7 @@ from math import radians
 import sdl2
 
 from circle import Circle
+from helper import pairs
 from polygon import Polygon
 
 
@@ -22,7 +23,7 @@ class Renderer:
     ]
     INITIAL_RECTANGLE_POINTS = [(150, 325), (450, 325), (450, 375), (150, 375)]
     INITIAL_TRIANGLE_POINTS = [(150, 325), (450, 325), (300, 175)]
-    INITIAL_CIRCLE_PARAMETERS = ((600, 350), 100)
+    INITIAL_CIRCLE_PARAMETERS = ((205, 300), 100)
 
     def __init__(self, window):
         self._window = window
@@ -35,17 +36,18 @@ class Renderer:
         rectangle = Polygon(self.sdl_renderer, Renderer.INITIAL_RECTANGLE_POINTS,
                             is_point_visible=self._viewport.contains)
 
-        circle = Circle(self.sdl_renderer, *Renderer.INITIAL_CIRCLE_PARAMETERS,
-                        lambda point: self._viewport.contains(point) and not self._shapes[0].contains(point))
+        self._circle = Circle(self.sdl_renderer, *Renderer.INITIAL_CIRCLE_PARAMETERS,
+                              is_point_visible=lambda point: self._viewport.contains(point) and not self._shapes[
+                                  0].contains(point),
+                              viewport_points=list(pairs(Renderer.VIEWPORT_POINTS)))
+
+        self._vector = (-1, -1)
 
         triangle = Polygon(self.sdl_renderer, Renderer.INITIAL_TRIANGLE_POINTS,
-                           lambda point: self._viewport.contains(point) and
-                                         not self._shapes[0].contains(point) and
-                                         not self._shapes[2].contains(point))
+                           lambda point: self._viewport.contains(point) and not self._shapes[0].contains(point))
         self._shapes = [
             rectangle,
-            triangle,
-            circle,
+            triangle
         ]
 
     @property
@@ -57,6 +59,7 @@ class Renderer:
         self._viewport.draw()
         for shape in self._shapes:
             shape.draw()
+        self._circle.draw()
         self._present_render()
 
     def resize(self):
@@ -75,6 +78,14 @@ class Renderer:
 
         self._shapes = [*map(rotate, self._shapes)]
         self._draw_shapes()
+
+    def on_circle_event(self):
+        for _ in range(20):
+            vector = self._circle.edge_vector()
+            if vector is not None:
+                self._vector = vector
+            self._circle = self._circle.move(self._vector)
+            self._draw_shapes()
 
     def _clear_draw_field(self):
         sdl2.SDL_SetRenderDrawColor(self.sdl_renderer, *self.WHITE_COLOR)

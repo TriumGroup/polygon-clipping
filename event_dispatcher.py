@@ -2,6 +2,7 @@ import sdl2
 
 
 class EventDispatcher:
+    CIRCLE_EVENT = 0x8002
     ROTATE_EVENT = 0x8001
     ROTATE_TICKS = 2
 
@@ -14,7 +15,8 @@ class EventDispatcher:
             sdl2.SDL_MOUSEMOTION: self._dispatch_mouse_event,
             sdl2.SDL_MOUSEBUTTONDOWN: self._dispatch_mouse_event,
             sdl2.SDL_MOUSEBUTTONUP: self._dispatch_mouse_event,
-            EventDispatcher.ROTATE_EVENT: self._dispatch_rotate_event
+            EventDispatcher.ROTATE_EVENT: self._dispatch_rotate_event,
+            EventDispatcher.CIRCLE_EVENT: self._dispatch_circle_event
         }
 
     def dispatch(self, event):
@@ -37,8 +39,10 @@ class EventDispatcher:
             self._window.on_mouse_move(position, vector)
 
     def _dispatch_rotate_event(self, _):
-
         self._window.on_rotate()
+
+    def _dispatch_circle_event(self, _):
+        self._window.on_circle_event()
 
     def _dispatch_quit_event(self, _):
         self._event_loop.stop()

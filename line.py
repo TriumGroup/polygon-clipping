@@ -2,7 +2,7 @@ from math import trunc
 
 import sdl2
 
-from helper import move_point, centroid, rotate_point, distance
+from helper import move_point, centroid, rotate_point, line_contains
 from shape import Shape
 
 
@@ -35,8 +35,7 @@ class Line(Shape):
                     self._is_point_visible, self._dash_length)
 
     def contains(self, point):
-        return distance(self._start, point) + distance(self._end, point) - \
-               distance(self._start, self._end) <= Shape.PRECISION
+        return line_contains(self._start, self._end, point)
 
     def move(self, vector):
         return Line(self._sdl_renderer,
