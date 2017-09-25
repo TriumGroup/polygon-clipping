@@ -30,16 +30,14 @@ class Polygon(Shape):
 
     def contains(self, point):
         x, y = point
-        RIGHT = "RIGHT"
-        LEFT = "LEFT"
+        RIGHT = 0x1
+        LEFT = 0x2
 
         def inside_convex_polygon(point, vertices):
             previous_side = None
-            n_vertices = len(vertices)
-            for n in range(n_vertices):
-                a, b = vertices[n], vertices[(n + 1) % n_vertices]
-                affine_segment = v_sub(b, a)
-                affine_point = v_sub(point, a)
+            for first, second in pairs(vertices):
+                affine_segment = point_sub(second, first)
+                affine_point = point_sub(point, first)
                 current_side = get_side(affine_segment, affine_point)
                 if current_side is None:
                     return False  # outside or over an edge
@@ -49,19 +47,23 @@ class Polygon(Shape):
                     return False
             return True
 
-        def get_side(a, b):
-            x = x_product(a, b)
-            if x < 0:
+        def get_side(start, end):
+            product = x_product(start, end)
+            if product < 0:
                 return LEFT
-            elif x > 0:
+            elif product > 0:
                 return RIGHT
             else:
                 return None
 
-        def v_sub(a, b):
-            return a[0] - b[0], a[1] - b[1]
+        def point_sub(first, second):
+            first_x, first_y = first
+            second_x, second_y = second
+            return first_x - second_x, first_y - second_y
 
-        def x_product(a, b):
-            return a[0] * b[1] - a[1] * b[0]
+        def x_product(first, second):
+            first_x, first_y = first
+            second_x, second_y = second
+            return first_x * second_y - first_y * second_x
 
         return inside_convex_polygon((x, y), self._points)
