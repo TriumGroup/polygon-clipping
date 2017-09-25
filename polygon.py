@@ -1,13 +1,12 @@
-from helper import pairs, centroid, rotate_point
+from helper import pairs, centroid, rotate_point, move_point
 
 from line import Line
 from shape import Shape
 
 
 class Polygon(Shape):
-    DEFAULT_DASH_LENGTH = 4
-
-    def __init__(self, sdl_renderer, points, is_point_visible=lambda point: True, dash_length=DEFAULT_DASH_LENGTH):
+    def __init__(self, sdl_renderer, points, is_point_visible=Shape.ALWAYS_VISIBLE,
+                 dash_length=Shape.DEFAULT_DASH_LENGTH):
         self._is_point_visible = is_point_visible
         self._points = points
         self._sdl_renderer = sdl_renderer
@@ -21,16 +20,11 @@ class Polygon(Shape):
         Line(self._sdl_renderer, start, end, self._is_point_visible, self._dash_length).draw()
 
     def rotate(self, angle):
-        center = centroid(self._points)
-        new_points = [*map(lambda point: rotate_point(center, *point, angle), self._points)]
+        center = centroid(*self._points)
+        new_points = [*map(lambda point: rotate_point(center, point, angle), self._points)]
         return Polygon(self._sdl_renderer, new_points, self._is_point_visible, self._dash_length)
 
     def move(self, vector):
-        def move_point(point, vector):
-            x, y = point
-            delta_x, delta_y = vector
-            return x + delta_x, y + delta_y
-
         new_points = [*map(lambda point: move_point(point, vector), self._points)]
         return Polygon(self._sdl_renderer, new_points, self._is_point_visible, self._dash_length)
 

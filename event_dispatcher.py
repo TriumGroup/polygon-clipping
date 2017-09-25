@@ -14,18 +14,9 @@ class EventDispatcher:
             sdl2.SDL_MOUSEMOTION: self._dispatch_mouse_event,
             sdl2.SDL_MOUSEBUTTONDOWN: self._dispatch_mouse_event,
             sdl2.SDL_MOUSEBUTTONUP: self._dispatch_mouse_event,
-            EventDispatcher.TIMER_EVENT: self._dispatch_timer_event
+            sdl2.SDL_KEYDOWN: self._dispatch_key_event,
+            sdl2.SDL_KEYUP: self._dispatch_key_event
         }
-
-        # def callback(interval, params):
-        #     event = sdl2.SDL_Event()
-        #     event.type = sdl2.SDL_USEREVENT
-        #     event_pointer = ctypes.byref(event)
-        #     sdl2.SDL_PushEvent(event_pointer)
-        #     return interval
-        #
-        # sdl2.SDL_AddTimer(EventDispatcher.TIMER_INTERVAL,
-        #                   sdl2.SDL_TimerCallback(callback), None)
 
     def dispatch(self, event):
         dispatcher = self._event_dispatchers.get(event.type)
@@ -37,19 +28,17 @@ class EventDispatcher:
             self._window.resize()
 
     def _dispatch_mouse_event(self, event):
+        position = event.motion.x, event.motion.y
         if event.motion.type == sdl2.SDL_MOUSEBUTTONDOWN:
-            position = event.motion.x, event.motion.y
             self._window.on_mouse_down(position)
         elif event.motion.type == sdl2.SDL_MOUSEBUTTONUP:
-            position = event.motion.x, event.motion.y
             self._window.on_mouse_up(position)
         elif event.motion.type == sdl2.SDL_MOUSEMOTION:
             vector = event.motion.xrel, event.motion.yrel
-            position = event.motion.x, event.motion.y
             self._window.on_mouse_move(position, vector)
 
-    def _dispatch_timer_event(self, _):
-        self._window.timer_tick()
+    def _dispatch_key_event(self, _):
+        self._window.key_state_changed()
 
     def _dispatch_quit_event(self, _):
         self._event_loop.stop()

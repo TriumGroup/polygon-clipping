@@ -30,8 +30,8 @@ class Window:
         sdl2.SDL_GetWindowSize(self.sdl_window, ctypes.byref(width), ctypes.byref(height))
         return width.value, height.value
 
-    def timer_tick(self):
-        self._renderer.timer_tick()
+    def key_state_changed(self):
+        self._renderer.key_state_changed()
 
     def resize(self):
         self._renderer.resize()

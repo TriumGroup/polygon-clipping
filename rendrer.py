@@ -1,3 +1,4 @@
+from itertools import cycle
 from math import radians
 
 import sdl2
@@ -7,7 +8,7 @@ from polygon import Polygon
 
 
 class Renderer:
-    ONE_DEGREE = radians(3)
+    ROTATION_ANGLES = cycle((radians(3), radians(-3), radians(3)))
     WHITE_COLOR = (255, 255, 255, 255)
     BLACK_COLOR = (0, 0, 0, 255)
     VIEWPORT_PADDING = 100
@@ -20,6 +21,7 @@ class Renderer:
         (VIEWPORT_PADDING, HEIGHT - VIEWPORT_PADDING)
     ]
     INITIAL_RECTANGLE_POINTS = [(150, 325), (450, 325), (450, 375), (150, 375)]
+    INITIAL_TRIANGLE_POINTS = [(150, 325), (450, 325), (300, 175)]
     INITIAL_CIRCLE_PARAMETERS = ((600, 350), 100)
 
     def __init__(self, window):
@@ -33,10 +35,17 @@ class Renderer:
         rectangle = Polygon(self.sdl_renderer, Renderer.INITIAL_RECTANGLE_POINTS,
                             is_point_visible=self._viewport.contains)
 
+        circle = Circle(self.sdl_renderer, *Renderer.INITIAL_CIRCLE_PARAMETERS,
+                        lambda point: self._viewport.contains(point) and not self._shapes[0].contains(point))
+
+        triangle = Polygon(self.sdl_renderer, Renderer.INITIAL_TRIANGLE_POINTS,
+                           lambda point: self._viewport.contains(point) and
+                                         not self._shapes[0].contains(point) and
+                                         not self._shapes[2].contains(point))
         self._shapes = [
             rectangle,
-            Circle(self.sdl_renderer, *Renderer.INITIAL_CIRCLE_PARAMETERS,
-                   lambda point: self._viewport.contains(point) and not self._shapes[0].contains(point))
+            triangle,
+            circle,
         ]
 
     @property
@@ -60,8 +69,11 @@ class Renderer:
                     self._shapes[index] = shape.move(vector)
             self._draw_shapes()
 
-    def timer_tick(self):
-        self._shapes = [*map(lambda shape: shape.rotate(Renderer.ONE_DEGREE), self._shapes)]
+    def key_state_changed(self):
+        def rotate(shape):
+            return shape.rotate(next(Renderer.ROTATION_ANGLES))
+
+        self._shapes = [*map(rotate, self._shapes)]
         self._draw_shapes()
 
     def _clear_draw_field(self):
