@@ -12,7 +12,14 @@ class EventLoop:
 
     def run(self):
         self._running = True
+        ticks = sdl2.SDL_GetTicks()
+        event = sdl2.SDL_Event()
+        event.type = EventDispatcher.TIMER_EVENT
         while self._running:
+            current_ticks = sdl2.SDL_GetTicks()
+            if current_ticks - ticks > EventDispatcher.TIMER_INTERVAL:
+                ticks = current_ticks
+                self._event_dispatcher.dispatch(event)
             self._receive_events()
 
     def stop(self):

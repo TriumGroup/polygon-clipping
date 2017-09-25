@@ -10,7 +10,7 @@ class Window:
     DEFAULT_HEIGHT = 700
 
     def __init__(self, title, width=DEFAULT_WIDTH, height=DEFAULT_HEIGHT):
-        sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO)
+        sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO | sdl2.SDL_INIT_TIMER)
         self.sdl_window = sdl2.SDL_CreateWindow(
             title,
             sdl2.SDL_WINDOWPOS_CENTERED,
@@ -29,6 +29,9 @@ class Window:
         height = ctypes.c_int()
         sdl2.SDL_GetWindowSize(self.sdl_window, ctypes.byref(width), ctypes.byref(height))
         return width.value, height.value
+
+    def timer_tick(self):
+        self._renderer.timer_tick()
 
     def resize(self):
         self._renderer.resize()
