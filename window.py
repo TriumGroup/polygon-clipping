@@ -19,7 +19,8 @@ class Window:
             height,
             sdl2.SDL_WINDOW_RESIZABLE
         )
-        self._mouse_pressed = False
+        self._right_mouse_pressed = False
+        self._left_mouse_pressed = False
         self._renderer = Renderer(self)
         self.resize()
 
@@ -30,20 +31,30 @@ class Window:
         sdl2.SDL_GetWindowSize(self.sdl_window, ctypes.byref(width), ctypes.byref(height))
         return width.value, height.value
 
-    def key_state_changed(self):
-        self._renderer.key_state_changed()
+    def on_rotate(self):
+        self._renderer.on_rotate()
 
     def resize(self):
         self._renderer.resize()
 
-    def on_mouse_down(self, position):
-        self._mouse_pressed = True
+    def on_mouse_down(self, position, is_left):
+        if is_left:
+            self._left_mouse_pressed = True
+        else:
+            self._right_mouse_pressed = True
 
-    def on_mouse_up(self, position):
-        self._mouse_pressed = False
+    def on_mouse_up(self, position, is_left):
+        if is_left:
+            self._left_mouse_pressed = False
+        else:
+            self._right_mouse_pressed = False
+
+    @property
+    def can_rotate(self):
+        return self._right_mouse_pressed
 
     def on_mouse_move(self, position, vector):
-        self._renderer.mouse_move(position, vector, self._mouse_pressed)
+        self._renderer.mouse_move(position, vector, self._left_mouse_pressed)
 
     def close(self):
         sdl2.SDL_DestroyWindow(self.sdl_window)

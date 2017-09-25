@@ -69,7 +69,7 @@ class Renderer:
                     self._shapes[index] = shape.move(vector)
             self._draw_shapes()
 
-    def key_state_changed(self):
+    def on_rotate(self):
         def rotate(shape):
             return shape.rotate(next(Renderer.ROTATION_ANGLES))
 

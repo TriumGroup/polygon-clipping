@@ -10,9 +10,16 @@ class EventLoop:
         self._event_dispatcher = EventDispatcher(self, window)
         self._running = False
 
+        rotate_event = sdl2.SDL_Event()
+        rotate_event.type = EventDispatcher.ROTATE_EVENT
+        self._window = window
+        self._rotate_event_pointer = ctypes.byref(rotate_event)
+
     def run(self):
         self._running = True
         while self._running:
+            if self._window.can_rotate:
+                sdl2.SDL_PushEvent(self._rotate_event_pointer)
             self._receive_events()
 
     def stop(self):

@@ -2,8 +2,8 @@ import sdl2
 
 
 class EventDispatcher:
-    TIMER_EVENT = 0x8001
-    TIMER_INTERVAL = 2
+    ROTATE_EVENT = 0x8001
+    ROTATE_TICKS = 2
 
     def __init__(self, event_loop, window):
         self._window = window
@@ -14,8 +14,7 @@ class EventDispatcher:
             sdl2.SDL_MOUSEMOTION: self._dispatch_mouse_event,
             sdl2.SDL_MOUSEBUTTONDOWN: self._dispatch_mouse_event,
             sdl2.SDL_MOUSEBUTTONUP: self._dispatch_mouse_event,
-            sdl2.SDL_KEYDOWN: self._dispatch_key_event,
-            sdl2.SDL_KEYUP: self._dispatch_key_event
+            EventDispatcher.ROTATE_EVENT: self._dispatch_rotate_event
         }
 
     def dispatch(self, event):
@@ -30,15 +29,16 @@ class EventDispatcher:
     def _dispatch_mouse_event(self, event):
         position = event.motion.x, event.motion.y
         if event.motion.type == sdl2.SDL_MOUSEBUTTONDOWN:
-            self._window.on_mouse_down(position)
+            self._window.on_mouse_down(position, event.button.button == sdl2.SDL_BUTTON_LEFT)
         elif event.motion.type == sdl2.SDL_MOUSEBUTTONUP:
-            self._window.on_mouse_up(position)
+            self._window.on_mouse_up(position, event.button.button == sdl2.SDL_BUTTON_LEFT)
         elif event.motion.type == sdl2.SDL_MOUSEMOTION:
             vector = event.motion.xrel, event.motion.yrel
             self._window.on_mouse_move(position, vector)
 
-    def _dispatch_key_event(self, _):
-        self._window.key_state_changed()
+    def _dispatch_rotate_event(self, _):
+
+        self._window.on_rotate()
 
     def _dispatch_quit_event(self, _):
         self._event_loop.stop()
