@@ -6,8 +6,8 @@ from rendrer import Renderer
 
 
 class Window:
-    DEFAULT_WIDTH = 1000
-    DEFAULT_HEIGHT = 700
+    DEFAULT_WIDTH = 600
+    DEFAULT_HEIGHT = 600
 
     def __init__(self, title, width=DEFAULT_WIDTH, height=DEFAULT_HEIGHT):
         sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO | sdl2.SDL_INIT_TIMER)

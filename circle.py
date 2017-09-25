@@ -8,7 +8,7 @@ from shape import Shape
 class Circle(Shape):
     DEFAULT_DASH_LENGTH = 4
 
-    def __init__(self, sdl_renderer, center, radius, is_point_visible=lambda x, y: True,
+    def __init__(self, sdl_renderer, center, radius, is_point_visible=lambda point: True,
                  dash_length=DEFAULT_DASH_LENGTH):
         self._is_point_visible = is_point_visible
         self._sdl_renderer = sdl_renderer
@@ -60,7 +60,7 @@ class Circle(Shape):
         return point_index % (self._dash_length * 2) > self._dash_length
 
     def _draw_point(self, x, y, point_index):
-        if self._is_point_visible(x, y):
+        if self._is_point_visible((x, y)):
             sdl2.SDL_RenderDrawPoint(self._sdl_renderer, x, y)
         else:
             if self._is_draw_dash_point(point_index):

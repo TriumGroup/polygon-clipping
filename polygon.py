@@ -7,7 +7,7 @@ from shape import Shape
 class Polygon(Shape):
     DEFAULT_DASH_LENGTH = 4
 
-    def __init__(self, sdl_renderer, points, is_point_visible=lambda x, y: True, dash_length=DEFAULT_DASH_LENGTH):
+    def __init__(self, sdl_renderer, points, is_point_visible=lambda point: True, dash_length=DEFAULT_DASH_LENGTH):
         self._is_point_visible = is_point_visible
         self._points = points
         self._sdl_renderer = sdl_renderer

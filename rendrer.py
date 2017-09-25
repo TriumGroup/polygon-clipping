@@ -11,8 +11,8 @@ class Renderer:
     WHITE_COLOR = (255, 255, 255, 255)
     BLACK_COLOR = (0, 0, 0, 255)
     VIEWPORT_PADDING = 100
-    WIDTH = 1000
-    HEIGHT = 700
+    WIDTH = 600
+    HEIGHT = 600
     VIEWPORT_POINTS = [
         (VIEWPORT_PADDING, VIEWPORT_PADDING),
         (WIDTH - VIEWPORT_PADDING, VIEWPORT_PADDING),
@@ -30,9 +30,13 @@ class Renderer:
             sdl2.SDL_RENDERER_ACCELERATED
         )
         self._viewport = Polygon(self.sdl_renderer, Renderer.VIEWPORT_POINTS)
+        rectangle = Polygon(self.sdl_renderer, Renderer.INITIAL_RECTANGLE_POINTS,
+                            is_point_visible=self._viewport.contains)
+
         self._shapes = [
-            Polygon(self.sdl_renderer, Renderer.INITIAL_RECTANGLE_POINTS),
-            Circle(self.sdl_renderer, *Renderer.INITIAL_CIRCLE_PARAMETERS)
+            rectangle,
+            Circle(self.sdl_renderer, *Renderer.INITIAL_CIRCLE_PARAMETERS,
+                   lambda point: self._viewport.contains(point) and not self._shapes[0].contains(point))
         ]
 
     @property

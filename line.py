@@ -7,7 +7,7 @@ import sdl2
 class Line:
     DEFAULT_DASH_LENGTH = 4
 
-    def __init__(self, sdl_renderer, start, end, is_point_visible=lambda x, y: True, dash_length=DEFAULT_DASH_LENGTH):
+    def __init__(self, sdl_renderer, start, end, is_point_visible=lambda point: True, dash_length=DEFAULT_DASH_LENGTH):
         self._is_point_visible = is_point_visible
         self._sdl_renderer = sdl_renderer
         self._dash_length = dash_length
@@ -56,7 +56,7 @@ class Line:
         return point_index % (self._dash_length * 2) > self._dash_length
 
     def _draw_point(self, x, y, point_index):
-        if self._is_point_visible(x, y):
+        if self._is_point_visible((x, y)):
             sdl2.SDL_RenderDrawPoint(self._sdl_renderer, x, y)
         else:
             if self._is_draw_dash_point(point_index):
