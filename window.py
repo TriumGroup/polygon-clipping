@@ -6,8 +6,8 @@ from rendrer import Renderer
 
 
 class Window:
-    DEFAULT_WIDTH = 800
-    DEFAULT_HEIGHT = 800
+    DEFAULT_WIDTH = 1000
+    DEFAULT_HEIGHT = 700
 
     def __init__(self, title, width=DEFAULT_WIDTH, height=DEFAULT_HEIGHT):
         sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO)
@@ -19,6 +19,7 @@ class Window:
             height,
             sdl2.SDL_WINDOW_RESIZABLE
         )
+        self._mouse_pressed = False
         self._renderer = Renderer(self)
         self.resize()
 
@@ -31,6 +32,15 @@ class Window:
 
     def resize(self):
         self._renderer.resize()
+
+    def on_mouse_down(self, position):
+        self._mouse_pressed = True
+
+    def on_mouse_up(self, position):
+        self._mouse_pressed = False
+
+    def on_mouse_move(self, position, vector):
+        self._renderer.mouse_move(position, vector, self._mouse_pressed)
 
     def close(self):
         sdl2.SDL_DestroyWindow(self.sdl_window)
